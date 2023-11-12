@@ -21,7 +21,9 @@ jobs:
 
      - name: Deploy
        uses: vimeda/helm@v1.7.0
+       working-directory: infra/helm/ingress-nginx
        with:
+         helm: "helm3"
          dry-run: true
          release: "ingress-nginx"
          namespace: "ingress-nginx"
@@ -34,7 +36,9 @@ jobs:
      - name: Deploy
        if: github.ref == 'refs/heads/master'
        uses: vimeda/helm@v1.7.0
+       working-directory: infra/helm/ingress-nginx
        with:
+         helm: "helm3"
          release: "ingress-nginx"
          namespace: "ingress-nginx"
          chart: "app"
