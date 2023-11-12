@@ -1,4 +1,6 @@
 terraform {
+  cloud {}
+
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
@@ -7,8 +9,9 @@ terraform {
   }
 }
 
+
 variable "do_token" {
-  type    = string
+  type = string
 }
 
 provider "digitalocean" {
