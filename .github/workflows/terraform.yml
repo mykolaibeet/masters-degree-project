@@ -4,8 +4,7 @@ on:
  push:
    paths:
    - infra/terraform/**
-   - .github/workflows/**
- workflow_dispatch:
+   - .github/workflows/terraform.yml
  
 env:
  TF_LOG: INFO

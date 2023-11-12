@@ -4,8 +4,7 @@ on:
  push:
    paths:
    - infra/helm/ingress-nginx/**
-   - .github/workflows/**
- workflow_dispatch:
+   - .github/workflows/helm-ingress-nginx.yml
 
 jobs:
  helm:
@@ -22,7 +21,6 @@ jobs:
 
      - name: Deploy
        uses: vimeda/helm@v1.7.0
-       working-directory: infra/helm/ingress-nginx
        with:
          helm: "helm3"
          dry-run: true
@@ -37,7 +35,6 @@ jobs:
      - name: Deploy
        if: github.ref == 'refs/heads/master'
        uses: vimeda/helm@v1.7.0
-       working-directory: infra/helm/ingress-nginx
        with:
          helm: "helm3"
          release: "ingress-nginx"
