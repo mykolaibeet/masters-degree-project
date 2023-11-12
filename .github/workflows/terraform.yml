@@ -1,0 +1,94 @@
+name: "Terraform Infrastructure Change Management Pipeline"
+ 
+on:
+ push:
+   branches:
+   - master
+   paths:
+   - infra/terraform/**
+ pull_request:
+   branches:
+   - master
+   paths:
+   - infra/terraform/**
+ 
+env:
+ # verbosity setting for Terraform logs
+ TF_LOG: INFO
+ # Credentials for deployment to AWS
+ DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+ TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
+ TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+ TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
+ 
+jobs:
+ terraform:
+   name: "Terraform Infrastructure Change Management"
+   runs-on: ubuntu-latest
+   defaults:
+     run:
+       shell: bash
+       # We keep Terraform files in the terraform directory.
+       working-directory: ./terraform
+ 
+   steps:
+     - name: Checkout the repository to the runner
+       uses: actions/checkout@v2
+ 
+     - name: Setup Terraform with specified version on the runner
+       uses: hashicorp/setup-terraform@v2
+       with:
+         terraform_version: 1.6.3
+    
+     - name: Terraform init
+       id: init
+       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=$TF_CLOUD_ORGANIZATION" -backend-config="workspaces.name=$TF_WORKSPACE" -var.do_token="$DIGITALOCEAN_ACCESS_TOKEN"
+ 
+     - name: Terraform format
+       id: fmt
+       run: terraform fmt -check
+    
+     - name: Terraform validate
+       id: validate
+       run: terraform validate
+ 
+     - name: Terraform plan
+       id: plan
+         #       if: github.event_name == 'pull_request'
+       run: terraform plan -no-color -input=false
+       continue-on-error: true
+    
+     - uses: actions/github-script@v6
+       if: github.event_name == 'pull_request'
+       env:
+         PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+       with:
+         script: |
+           const output = `#### Terraform Format and Style \`${{ steps.fmt.outcome }}\`
+           #### Terraform Initialization `${{ steps.init.outcome }}\`
+           #### Terraform Validation \`${{ steps.validate.outcome }}\`
+           #### Terraform Plan \`${{ steps.plan.outcome }}\`
+ 
+           <details><summary>Show Plan</summary>
+ 
+           \`\`\`\n
+           ${process.env.PLAN}
+           \`\`\`
+ 
+           </details>
+           *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+ 
+           github.rest.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+           })
+ 
+     - name: Terraform Plan Status
+       if: steps.plan.outcome == 'failure'
+       run: exit 1
+ 
+     - name: Terraform Apply
+       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+       run: terraform apply -auto-approve -input=false
