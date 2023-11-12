@@ -15,11 +15,7 @@ jobs:
      workdir: /opt/app/
      volumes:
        - infra/helm/ingress-nginx:/opt/app
-   defaults:
-     run:
-       shell: bash
-       working-directory: infra/helm/ingress-nginx
- 
+
    steps:
      - name: Deploy
        run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
