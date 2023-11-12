@@ -1,0 +1,34 @@
+name: "Helm ingress-nginx"
+ 
+on:
+ push:
+   paths:
+   - infra/helm/ingress-nginx/**
+   - .github/workflows/helm-ingress-nginx.yml
+
+jobs:
+ helm:
+   name: "Helm ingress-nginx"
+   runs-on: ubuntu-latest
+   defaults:
+     run:
+       shell: bash
+       working-directory: infra/helm/ingress-nginx
+ 
+   steps:
+     - name: Checkout the repository to the runner
+       uses: actions/checkout@v2
+
+     - name: Deploy
+       uses: deliverybot/helm@v1
+       with:
+         release: "ingress-nginx"
+         namespace: "ingress-nginx"
+         chart: "ingress-nginx"
+         token: "${{ github.token }}"
+         value-files: >-
+         [
+           "values.yaml"
+         ]
+       env:
+         KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
