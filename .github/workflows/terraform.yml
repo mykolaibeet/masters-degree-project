@@ -41,7 +41,7 @@ jobs:
     
      - name: Terraform init
        id: init
-       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=$TF_CLOUD_ORGANIZATION" -backend-config="workspaces.name=$TF_WORKSPACE" -var.do_token="$DIGITALOCEAN_ACCESS_TOKEN"
+       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=${TF_CLOUD_ORGANIZATION}" -backend-config="workspaces.name=${TF_WORKSPACE}" -var.do_token="${DIGITALOCEAN_ACCESS_TOKEN}"
  
      - name: Terraform format
        id: fmt
