@@ -10,37 +10,24 @@ jobs:
  helm:
    name: "Helm ingress-nginx"
    runs-on: ubuntu-latest
+   container:
+     image: alpine/helm:3.11.1
+     workdir: /opt/app/
+     volumes:
+       - infra/helm/ingress-nginx:/opt/app
    defaults:
      run:
        shell: bash
        working-directory: infra/helm/ingress-nginx
  
    steps:
-     - name: Checkout the repository to the runner
-       uses: actions/checkout@v2
-
      - name: Deploy
-       uses: vimeda/helm@v1.7.0
-       with:
-         helm: "helm3"
-         dry-run: true
-         release: "ingress-nginx"
-         namespace: "ingress-nginx"
-         chart: "app"
-         token: "${{ github.token }}"
-         value-files: "infra/helm/ingress-nginx/values.yaml"
+       run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       uses: vimeda/helm@v1.7.0
-       with:
-         helm: "helm3"
-         release: "ingress-nginx"
-         namespace: "ingress-nginx"
-         chart: "app"
-         token: "${{ github.token }}"
-         value-files: "infra/helm/ingress-nginx/values.yaml"
+       run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
