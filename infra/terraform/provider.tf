@@ -11,7 +11,7 @@ terraform {
 
 
 variable "do_token" {
-  type    = string
+  type = string
 }
 
 provider "digitalocean" {
