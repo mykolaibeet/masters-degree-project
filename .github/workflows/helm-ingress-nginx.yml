@@ -4,7 +4,8 @@ on:
  push:
    paths:
    - infra/helm/ingress-nginx/**
-   - .github/workflows/helm-ingress-nginx.yml
+   - .github/workflows/**
+ workflow_dispatch:
 
 jobs:
  helm:
