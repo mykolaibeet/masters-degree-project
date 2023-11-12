@@ -16,6 +16,8 @@ env:
  TF_LOG: INFO
  # Credentials for deployment to AWS
  DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+ TF_CLOUD_HOSTNAME: "app.terraform.io"
+ TF_CLOUD_PROJECT: ${{ secrets.TF_WORKSPACE }}
  TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
  TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
  TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
@@ -41,7 +43,7 @@ jobs:
     
      - name: Terraform init
        id: init
-       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=${TF_CLOUD_ORGANIZATION}" -backend-config="workspaces.name=${TF_WORKSPACE}"
+       run: terraform init -backend-config="hostname=app.terraform.io"
  
      - name: Terraform format
        id: fmt
