@@ -20,7 +20,7 @@ jobs:
        uses: actions/checkout@v2
 
      - name: Deploy
-       uses: deliverybot/helm@v1
+       uses: vimeda/helm@v1.7.0
        with:
          release: "ingress-nginx"
          namespace: "ingress-nginx"
