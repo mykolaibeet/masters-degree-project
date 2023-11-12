@@ -12,7 +12,8 @@ jobs:
    runs-on: ubuntu-latest
    container:
      image: alpine/helm:3.11.1
-     working_dir: /opt/app/
+     options:
+       workdir: /opt/app/
      volumes:
        - infra/helm/ingress-nginx:/opt/app
 
