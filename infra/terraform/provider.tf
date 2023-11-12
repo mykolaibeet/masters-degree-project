@@ -1,5 +1,5 @@
 terraform {
-  backend "remote" {}
+  cloud {}
 
   required_providers {
     digitalocean = {
@@ -8,6 +8,7 @@ terraform {
     }
   }
 }
+
 
 variable "do_token" {
   type    = string
