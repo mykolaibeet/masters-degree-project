@@ -1,11 +1,5 @@
 terraform {
-  cloud {
-    organization = "mykolaibeet"
-
-    workspaces {
-      name = "masters-degree-project"
-    }
-  }
+  backend "remote" {}
 
   required_providers {
     digitalocean = {
