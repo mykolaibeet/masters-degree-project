@@ -41,7 +41,7 @@ jobs:
     
      - name: Terraform init
        id: init
-       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=${TF_CLOUD_ORGANIZATION}" -backend-config="workspaces.name=${TF_WORKSPACE}" -var.do_token="${DIGITALOCEAN_ACCESS_TOKEN}"
+       run: terraform init -backend-config="hostname=app.terraform.io" -backend-config="organization=${TF_CLOUD_ORGANIZATION}" -backend-config="workspaces.name=${TF_WORKSPACE}"
  
      - name: Terraform format
        id: fmt
@@ -54,7 +54,7 @@ jobs:
      - name: Terraform plan
        id: plan
          #       if: github.event_name == 'pull_request'
-       run: terraform plan -no-color -input=false
+       run: terraform plan -no-color -input=false -var.do_token="${DIGITALOCEAN_ACCESS_TOKEN}"
        continue-on-error: true
     
      - uses: actions/github-script@v6
@@ -90,4 +90,4 @@ jobs:
  
      - name: Terraform Apply
        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-       run: terraform apply -auto-approve -input=false
+       run: terraform apply -auto-approve -input=false -var.do_token="${DIGITALOCEAN_ACCESS_TOKEN}"
