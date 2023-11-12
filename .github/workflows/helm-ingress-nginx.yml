@@ -28,7 +28,7 @@ jobs:
          namespace: "ingress-nginx"
          chart: "app"
          token: "${{ github.token }}"
-         value-files: "values.yaml"
+         value-files: "infra/helm/ingress-nginx/values.yaml"
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
 
@@ -41,6 +41,6 @@ jobs:
          namespace: "ingress-nginx"
          chart: "app"
          token: "${{ github.token }}"
-         value-files: "values.yaml"
+         value-files: "infra/helm/ingress-nginx/values.yaml"
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
