@@ -1,4 +1,4 @@
-name: "Terraform Infrastructure Change Management Pipeline"
+name: "Terraform"
  
 on:
  push:
@@ -7,10 +7,7 @@ on:
    - .github/**
  
 env:
- # verbosity setting for Terraform logs
  TF_LOG: INFO
- # Credentials for deployment to DigitalOcean
- DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
  TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
  TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
  TF_CLOUD_HOSTNAME: "app.terraform.io"
@@ -19,12 +16,11 @@ env:
 
 jobs:
  terraform:
-   name: "Terraform Infrastructure Change Management"
+   name: "Terraform"
    runs-on: ubuntu-latest
    defaults:
      run:
        shell: bash
-       # We keep Terraform files in the terraform directory.
        working-directory: infra/terraform
  
    steps:
@@ -50,9 +46,8 @@ jobs:
  
      - name: Terraform plan
        id: plan
-         #       if: github.event_name == 'pull_request'
        run: terraform plan -no-color -input=false 
 
      - name: Terraform Apply
-       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-       run: terraform apply -auto-approve -input=false -var.do_token="${DIGITALOCEAN_ACCESS_TOKEN}"
+       if: github.ref == 'refs/heads/master'
+       run: terraform apply -auto-approve -input=false
