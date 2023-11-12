@@ -4,6 +4,7 @@ on:
  push:
    paths:
    - infra/terraform/**
+   - .github/
      # pull_request:
      #   branches:
      #   - master
