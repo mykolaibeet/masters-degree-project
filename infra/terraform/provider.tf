@@ -1,4 +1,12 @@
 terraform {
+  cloud {
+    organization = "mykolaibeet"
+
+    workspaces {
+      name = "masters-degree-project"
+    }
+  }
+
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
