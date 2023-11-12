@@ -5,23 +5,18 @@ on:
    paths:
    - infra/terraform/**
    - .github/**
-     # pull_request:
-     #   branches:
-     #   - master
-     #   paths:
-     #   - infra/terraform/**
  
 env:
  # verbosity setting for Terraform logs
  TF_LOG: INFO
- # Credentials for deployment to AWS
+ # Credentials for deployment to DigitalOcean
  DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
- TF_CLOUD_HOSTNAME: "app.terraform.io"
- TF_CLOUD_PROJECT: ${{ secrets.TF_WORKSPACE }}
- TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
- TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
  TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
- 
+ TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
+ TF_CLOUD_HOSTNAME: "app.terraform.io"
+ TF_CLOUD_PROJECT: ${{ secrets.TF_CLOUD_PROJECT }}
+ TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+
 jobs:
  terraform:
    name: "Terraform Infrastructure Change Management"
@@ -43,7 +38,7 @@ jobs:
     
      - name: Terraform init
        id: init
-       run: terraform init -backend-config="hostname=app.terraform.io"
+       run: terraform init
  
      - name: Terraform format
        id: fmt
