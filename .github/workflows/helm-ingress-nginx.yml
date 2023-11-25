@@ -11,19 +11,19 @@ jobs:
    name: "Helm ingress-nginx"
    runs-on: ubuntu-latest
    container:
-     image: alpine/helm:3.11.1
+     image: docker://alpine/helm:3.11.1
      options: " --workdir /opt/app/"
      volumes:
        - infra/helm/ingress-nginx:/opt/app
 
    steps:
      - name: Deploy
-       run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
+       run: upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
+       run: upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        env:
          KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
