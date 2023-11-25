@@ -15,7 +15,8 @@ jobs:
 
    steps:
      - name: Deploy
-       run: cd /github/workspace && ls -la && echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
+       uses: actions/checkout@v4
+       run: ls -la && echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
 
