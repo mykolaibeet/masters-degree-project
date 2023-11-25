@@ -20,13 +20,12 @@ jobs:
        uses: actions/checkout@v4
 
      - name: Deploy
-       run: ls -la && echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
+       run: cd infra/helm/ingress-nginx && echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
-       working-directory: /opt/app
+       run: cd infra/helm/ingress-nginx && echo $KUBECONFIG_FILE > ../kube.config && helm upgrade -i ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
