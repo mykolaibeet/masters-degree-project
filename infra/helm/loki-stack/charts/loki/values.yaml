@@ -11,7 +11,7 @@ image:
   #   - myRegistryKeySecretName
 
 ingress:
-  enabled: true
+  enabled: false
   # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
   # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
   # ingressClassName: nginx
@@ -103,8 +103,8 @@ config:
   chunk_store_config:
     max_look_back_period: 0s
   table_manager:
-    retention_deletes_enabled: false
-    retention_period: 0s
+    retention_deletes_enabled: true
+    retention_period: 5d
   compactor:
     working_directory: /data/loki/boltdb-shipper-compactor
     shared_store: filesystem
