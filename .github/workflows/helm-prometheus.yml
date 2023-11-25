@@ -4,7 +4,7 @@ on:
  push:
    paths:
    - infra/helm/prometheus/**
-   - .github/workflows/prometheus.yml
+   - .github/workflows/helm-prometheus.yml
 
 jobs:
  helm:
