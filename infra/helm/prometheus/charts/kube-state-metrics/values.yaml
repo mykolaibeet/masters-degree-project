@@ -110,7 +110,7 @@ kubeRBACProxy:
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   containerSecurityContext: {}
 
-  resources: {}
+  resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -118,9 +118,9 @@ kubeRBACProxy:
     # limits:
     #  cpu: 100m
     #  memory: 64Mi
-    # requests:
-    #  cpu: 10m
-    #  memory: 32Mi
+     requests:
+      cpu: 10m
+      memory: 32Mi
 
   ## volumeMounts enables mounting custom volumes in rbac-proxy containers
   ## Useful for TLS certificates and keys

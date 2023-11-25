@@ -272,13 +272,13 @@ ingress:
       hosts:
         - grafana.internal
 
-resources: {}
+resources:
 #  limits:
 #    cpu: 100m
 #    memory: 128Mi
-#  requests:
-#    cpu: 100m
-#    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 150Mi
 
 ## Node labels for pod assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
