@@ -17,14 +17,16 @@ jobs:
 
    steps:
      - name: Deploy
-       run: echo ${{ secrets.KUBECONFIG}} > kubeconfig.yaml && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
+       run: echo $KUBECONFIG_FILE > kubeconfig.yaml && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        working-directory: /opt/app
        env:
-         KUBECONFIG: "./kubeconfig.yaml"
+         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+         KUBECONFIG: ./kubeconfig.yaml
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: echo ${{ secrets.KUBECONFIG}} > kubeconfig.yaml && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
+       run: echo $KUBECONFIG_FILE > kubeconfig.yaml && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        working-directory: /opt/app
        env:
-         KUBECONFIG: "./kubeconfig.yaml"
+         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+         KUBECONFIG: ./kubeconfig.yaml
