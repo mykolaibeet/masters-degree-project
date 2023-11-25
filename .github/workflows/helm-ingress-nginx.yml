@@ -12,13 +12,10 @@ jobs:
    runs-on: ubuntu-latest
    container:
      image: docker://alpine/helm:3.11.1
-     volumes:
-       - ${{ github.workspace }}/infra/helm/ingress-nginx:/opt/app
 
    steps:
      - name: Deploy
-       run: echo $KUBECONFIG_FILE > ../kube.config && pwd && ls -la && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
-       working-directory: /opt/app
+       run: cd ${{ github.workspace }}/infra/helm/ingress-nginx && echo $KUBECONFIG_FILE > ../kube.config && pwd && ls -la && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
 
