@@ -26,7 +26,7 @@ resource "digitalocean_loadbalancer" "masters_degree" {
     entry_port     = 443
     entry_protocol = "tcp"
 
-    target_port     = 443
+    target_port     = 30391
     target_protocol = "tcp"
   }
 
