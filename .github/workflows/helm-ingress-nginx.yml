@@ -12,9 +12,7 @@ jobs:
    runs-on: ubuntu-latest
    container:
      image: docker://alpine/helm:3.11.1
-     options: " --workdir /opt/app/"
-     volumes:
-       - infra/helm/ingress-nginx:/opt/app
+     options: " --workdir /opt/app/ -v infra/helm/ingress-nginx:/opt/app"
 
    steps:
      - name: Deploy
