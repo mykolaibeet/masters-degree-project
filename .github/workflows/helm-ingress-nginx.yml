@@ -26,6 +26,6 @@ jobs:
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: cd infra/helm/ingress-nginx && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i ingress-nginx . -f values.yml -n ingress-nginx
+       run: cd infra/helm/ingress-nginx && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i ingress-nginx . -f values.yaml -n ingress-nginx
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
