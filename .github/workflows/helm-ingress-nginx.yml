@@ -15,7 +15,6 @@ jobs:
 
    steps:
      - name: Deploy
-       context: .
        run: echo $KUBECONFIG_FILE > ../kube.config && ls -la && cd .. && ls -la && cd .. && ls -la && helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-nginx --kubeconfig ../kube.config
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
