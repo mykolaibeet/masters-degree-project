@@ -1,14 +1,14 @@
-name: "Helm prometheus"
+name: "Helm ingress-nginx"
  
 on:
  push:
    paths:
-   - infra/helm/prometheus/**
-   - .github/workflows/prometheus.yml
+   - infra/helm/ingress-nginx/**
+   - .github/workflows/helm-ingress-nginx.yml
 
 jobs:
  helm:
-   name: "Helm prometheus"
+   name: "Helm ingress-nginx"
    runs-on: ubuntu-latest
    container:
      image: docker://alpine/helm:3.11.1
@@ -20,12 +20,12 @@ jobs:
        uses: actions/checkout@v4
 
      - name: Deploy
-       run: cd infra/helm/prometheus && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i --dry-run prometheus . -f values.yaml -n default
+       run: cd infra/helm/ingress-nginx && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i --dry-run ingress-nginx . -f values.yaml -n ingress-nginx
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: cd infra/helm/prometheus && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i prometheus . -f values.yaml -n default
+       run: cd infra/helm/ingress-nginx && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i ingress-nginx . -f values.yaml -n ingress-nginx
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
