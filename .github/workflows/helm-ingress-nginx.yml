@@ -20,11 +20,11 @@ jobs:
        run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        working-directory: /opt/app
        env:
-         KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
+         KUBECONFIG: "${{ secrets.KUBECONFIG }}"
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
        run: helm upgrade -i --dry-run ingress-nginx . -f values.yml -n ingress-ngins
        working-directory: /opt/app
        env:
-         KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
+         KUBECONFIG: "${{ secrets.KUBECONFIG }}"
