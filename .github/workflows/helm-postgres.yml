@@ -1,0 +1,31 @@
+name: "Helm postgres"
+ 
+on:
+ push:
+   paths:
+   - infra/helm/postgresql/**
+   - .github/workflows/helm-postgres.yml
+
+jobs:
+ helm:
+   name: "Helm postgres"
+   runs-on: ubuntu-latest
+   container:
+     image: docker://alpine/helm:3.11.1
+     volumes:
+       - ${{ github.workspace }}:/app
+
+   steps:
+     - name: Checkout repo
+       uses: actions/checkout@v4
+
+     - name: Deploy
+       run: cd infra/helm/postgresql && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i --dry-run postgres . -f values.yaml -n default
+       env:
+         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+
+     - name: Deploy
+       if: github.ref == 'refs/heads/master'
+       run: cd infra/helm/postgresql && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i postgres . -f values.yaml -n default
+       env:
+         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
