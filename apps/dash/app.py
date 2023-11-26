@@ -6,6 +6,9 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash import dash_table
+import requests
+import re
+import pandas as pd
 
 CHART_THEME = 'plotly_white'  # others examples: seaborn, ggplot2, plotly_dark
 chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
@@ -185,14 +188,14 @@ app.layout = dbc.Container(
 
         dbc.Row([  # start of third row
             dbc.Col([  # first column on second row
-                html.H5('Total Portfolio Value ($USD)', className='text-center'),
+                html.H5('History price', className='text-center'),
                 dcc.Graph(id='chrt-portfolio-main',
                           figure=chart_ptfvalue,
                           style={'height':550}),
                 html.Hr(),
             ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
             dbc.Col([  # second column on third row
-                html.H5('Top 15 Holdings', className='text-center'),
+                html.H5('Score', className='text-center'),
                 dcc.Graph(id='pie-top15',
                       figure = donut_top,
                       style={'height':380}),
@@ -207,6 +210,76 @@ app.layout = dbc.Container(
 )
 def renderer(url):
     return url
+
+@callback(
+    Output("chrt-portfolio-main", "figure")[0],
+    Output("pie-top15", "figure")[1],
+    Input("nft_url", "value"),
+)
+def analyzer():
+    data = {'date': [1, 2, 3], 'price': [14, 15, 16]}
+
+    chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
+    chart_ptfvalue.add_trace(go.Scatter(x=data['date'], y=data['price'],
+                                        mode='lines',  # you can also use "lines+markers", or just "markers"
+                                        name='Global Value'))
+    chart_ptfvalue.layout.template = CHART_THEME
+    chart_ptfvalue.layout.height=500
+    chart_ptfvalue.update_layout(margin = dict(t=50, b=50, l=25, r=25))  # this will help you optimize the chart space
+    chart_ptfvalue.update_layout(
+        #     title='Global Portfolio Value (USD $)',
+        xaxis_tickfont_size=12,
+        yaxis=dict(
+            title='Price for NFT',
+            titlefont_size=14,
+            tickfont_size=12,
+        ))
+
+    donut_top = go.Figure()
+    donut_top.layout.template = CHART_THEME
+    donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
+                                     title = {'text': "Score"},
+                                     value = index_score,
+                                     gauge = {'axis': {'range': [None, 10]},
+                                              'steps' : [
+                                                  {'range': [0, 2], 'color': "#e03030"},
+                                                  {'range': [2, 4], 'color': "#aa5500"},
+                                                  {'range': [4, 6], 'color': "#746100"},
+                                                  {'range': [6, 8], 'color': "#48601c"},
+                                                  {'range': [8, 10], 'color': "#2a5838"}],
+                                              'bar': {'color': "#d6d1d1"}}))
+    #donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
+    #donut_top.update_traces(textposition='outside', textinfo='label+value')
+    donut_top.update_layout(showlegend=False)
+    donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
+
+    return chart_ptfvalue, donut_top
+
+@callback(
+    Output("pie-top15", "figure"),
+    Input("nft_url", "value"),
+)
+def score():
+    donut_top = go.Figure()
+    donut_top.layout.template = CHART_THEME
+    donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
+                                     title = {'text': "Score"},
+                                     value = index_score,
+                                     gauge = {'axis': {'range': [None, 10]},
+                                              'steps' : [
+                                                  {'range': [0, 2], 'color': "#e03030"},
+                                                  {'range': [2, 4], 'color': "#aa5500"},
+                                                  {'range': [4, 6], 'color': "#746100"},
+                                                  {'range': [6, 8], 'color': "#48601c"},
+                                                  {'range': [8, 10], 'color': "#2a5838"}],
+                                              'bar': {'color': "#d6d1d1"}}))
+    #donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
+    #donut_top.update_traces(textposition='outside', textinfo='label+value')
+    donut_top.update_layout(showlegend=False)
+    donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
+
+    return donut_top
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8050, use_reloader=True)
