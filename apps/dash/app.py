@@ -7,12 +7,183 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash import dash_table
 
+CHART_THEME = 'plotly_white'  # others examples: seaborn, ggplot2, plotly_dark
+chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
+chart_ptfvalue.add_trace(go.Scatter(x=[1, 2, 3], y=[4, 5, 6],
+                                    mode='lines',  # you can also use "lines+markers", or just "markers"
+                                    name='Global Value'))
+chart_ptfvalue.layout.template = CHART_THEME
+chart_ptfvalue.layout.height=500
+chart_ptfvalue.update_layout(margin = dict(t=50, b=50, l=25, r=25))  # this will help you optimize the chart space
+chart_ptfvalue.update_layout(
+    #     title='Global Portfolio Value (USD $)',
+    xaxis_tickfont_size=12,
+    yaxis=dict(
+        title='Value: $ USD',
+        titlefont_size=14,
+        tickfont_size=12,
+    ))
+
+
+indicators_ptf = go.Figure()
+indicators_ptf.layout.template = CHART_THEME
+indicators_ptf.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 1,
+    number = {'suffix': " %"},
+    title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
+    delta = {'position': "bottom", 'reference': 1, 'relative': False},
+    domain = {'row': 0, 'column': 0}))
+
+indicators_ptf.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 2,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
+    delta = {'position': "bottom", 'reference': 2, 'relative': False},
+    domain = {'row': 1, 'column': 0}))
+
+indicators_ptf.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 3,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
+    delta = {'position': "bottom", 'reference': 3, 'relative': False},
+    domain = {'row': 2, 'column': 0}))
+
+indicators_ptf.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 4,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
+    delta = {'position': "bottom", 'reference': 4, 'relative': False},
+    domain = {'row': 3, 'column': 1}))
+
+indicators_ptf.update_layout(
+    grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+    margin=dict(l=50, r=50, t=30, b=30)
+)
+
+
+indicators_sp500 = go.Figure()
+indicators_sp500.layout.template = CHART_THEME
+indicators_sp500.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 1,
+    number = {'suffix': " %"},
+    title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
+    domain = {'row': 0, 'column': 0}))
+
+indicators_sp500.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 2,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
+    domain = {'row': 1, 'column': 0}))
+
+indicators_sp500.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 3,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
+    domain = {'row': 2, 'column': 0}))
+
+indicators_sp500.add_trace(go.Indicator(
+    mode = "number+delta",
+    value = 4,
+    number = {'suffix': " %"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
+    domain = {'row': 3, 'column': 1}))
+
+indicators_sp500.update_layout(
+    grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+    margin=dict(l=50, r=50, t=30, b=30)
+)
+
+
+fig_growth2 = go.Figure()
+fig_growth2.layout.template = CHART_THEME
+fig_growth2.add_trace(go.Bar(
+    x=[1, 2, 3],
+    y=[4, 5, 6],
+    name='Portfolio'
+))
+fig_growth2.add_trace(go.Bar(
+    x=[1, 2, 3],
+    y=[4, 5, 6],
+    name='S&P 500',
+))
+fig_growth2.update_layout(barmode='group')
+fig_growth2.layout.height=300
+fig_growth2.update_layout(margin = dict(t=50, b=50, l=25, r=25))
+fig_growth2.update_layout(
+    xaxis_tickfont_size=12,
+    yaxis=dict(
+        title='% change',
+        titlefont_size=13,
+        tickfont_size=12,
+    ))
+
+fig_growth2.update_layout(legend=dict(
+    yanchor="top",
+    y=0.99,
+    xanchor="right",
+    x=0.99))
+
+
+donut_top = go.Figure()
+donut_top.layout.template = CHART_THEME
+donut_top.add_trace(go.Pie(labels=['A', 'B', 'C'], values=[1, 2, 3]))
+donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
+donut_top.update_traces(textposition='outside', textinfo='label+value')
+donut_top.update_layout(showlegend=False)
+donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 app.layout = dbc.Container(
     [
         dbc.Row(dbc.Col(html.H2('PORTFOLIO OVERVIEW', className='text-center text-primary, mb-3'))),  # header row
+
+        dbc.Row([  # start of second row
+            dbc.Col([  # first column on second row
+            html.H5('Total Portfolio Value ($USD)', className='text-center'),
+            dcc.Graph(id='chrt-portfolio-main',
+                      figure=chart_ptfvalue,
+                      style={'height':550}),
+            html.Hr(),
+            ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
+            dbc.Col([  # second column on second row
+            html.H5('Portfolio', className='text-center'),
+            dcc.Graph(id='indicators-ptf',
+                      figure=indicators_ptf,
+                      style={'height':550}),
+            html.Hr()
+            ], width={'size': 2, 'offset': 0, 'order': 2}),  # width second column on second row
+            dbc.Col([  # third column on second row
+            html.H5('S&P500', className='text-center'),
+            dcc.Graph(id='indicators-sp',
+                      figure=indicators_sp500,
+                      style={'height':550}),
+            html.Hr()
+            ], width={'size': 2, 'offset': 0, 'order': 3}),  # width third column on second row
+        ]),  # end of second row
+
+        dbc.Row([  # start of third row
+            dbc.Col([  # first column on third row
+                html.H5('Monthly Return (%)', className='text-center'),
+                dcc.Graph(id='chrt-portfolio-secondary',
+                      figure=fig_growth2,
+                      style={'height':380}),
+            ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
+            dbc.Col([  # second column on third row
+                html.H5('Top 15 Holdings', className='text-center'),
+                dcc.Graph(id='pie-top15',
+                      figure = donut_top,
+                      style={'height':380}),
+            ], width={'size': 4, 'offset': 0, 'order': 2}),  # width second column on second row
+        ])  # end of third row
+        
     ], fluid=True)
 
 
