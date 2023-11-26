@@ -1,4 +1,4 @@
-from dash import Dash
+from dash import Dash, callback
 from dash import dcc
 from dash import html
 from dash.dependencies import Output, Input
@@ -143,14 +143,18 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 app.layout = dbc.Container(
     [
-        dbc.Row(dbc.Col(html.H2('PORTFOLIO OVERVIEW', className='text-center text-primary, mb-3'))),  # header row
+        dbc.Row(dbc.Col(html.H2('NFT Analyzer', className='text-center text-primary, mb-3'))),
+
+        dbc.Row(dbc.Col(dcc.Input(
+            id="nft_url",
+            placeholder="NFT URL",
+            className='text-center text-primary, mb-3',
+            style={'width':950}
+        ))),  # header row
 
         dbc.Row([  # start of second row
             dbc.Col([  # first column on second row
-            html.H5('Total Portfolio Value ($USD)', className='text-center'),
-            dcc.Graph(id='chrt-portfolio-main',
-                      figure=chart_ptfvalue,
-                      style={'height':550}),
+            html.Iframe(id="nft_render", height=575, width=950),
             html.Hr(),
             ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
             dbc.Col([  # second column on second row
@@ -170,11 +174,12 @@ app.layout = dbc.Container(
         ]),  # end of second row
 
         dbc.Row([  # start of third row
-            dbc.Col([  # first column on third row
-                html.H5('Monthly Return (%)', className='text-center'),
-                dcc.Graph(id='chrt-portfolio-secondary',
-                      figure=fig_growth2,
-                      style={'height':380}),
+            dbc.Col([  # first column on second row
+                html.H5('Total Portfolio Value ($USD)', className='text-center'),
+                dcc.Graph(id='chrt-portfolio-main',
+                          figure=chart_ptfvalue,
+                          style={'height':550}),
+                html.Hr(),
             ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
             dbc.Col([  # second column on third row
                 html.H5('Top 15 Holdings', className='text-center'),
@@ -186,7 +191,13 @@ app.layout = dbc.Container(
         
     ], fluid=True)
 
+@callback(
+    Output("nft_render", "src"),
+    Input("nft_url", "value"),
+)
+def renderer(url):
+    return url
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8099)
+    app.run(debug=True, host="0.0.0.0", port=8050, use_reloader=True)
 
