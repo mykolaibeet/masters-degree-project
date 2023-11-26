@@ -133,9 +133,19 @@ fig_growth2.update_layout(legend=dict(
 
 donut_top = go.Figure()
 donut_top.layout.template = CHART_THEME
-donut_top.add_trace(go.Pie(labels=['A', 'B', 'C'], values=[1, 2, 3]))
-donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
-donut_top.update_traces(textposition='outside', textinfo='label+value')
+donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
+                                 title = {'text': "Score"},
+                                 value = 6,
+                                 gauge = {'axis': {'range': [None, 10]},
+                                          'steps' : [
+                                              {'range': [0, 2], 'color': "#e03030"},
+                                              {'range': [2, 4], 'color': "#aa5500"},
+                                              {'range': [4, 6], 'color': "#746100"},
+                                              {'range': [6, 8], 'color': "#48601c"},
+                                              {'range': [8, 10], 'color': "#2a5838"}],
+                                          'bar': {'color': "#d6d1d1"}}))
+#donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
+#donut_top.update_traces(textposition='outside', textinfo='label+value')
 donut_top.update_layout(showlegend=False)
 donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
 
