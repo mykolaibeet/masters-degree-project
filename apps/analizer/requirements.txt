@@ -1,0 +1,3 @@
+alembic
+SQLAlchemy
+common @ git+https://github.com/mykolaibeet/masters-degree-project.git#egg=rivermodel&subdirectory=package

@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  solana_processor:
+    build:
+      context: ./apps/solana_processor
+      dockerfile: ./
+    image: solana_processor
+    volumes:
+      - ./apps/solana_processor:/opt/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+#      - DATABASE_URL=postgresql://user:password@db:5432/dbname
+#      - DATABASE_ASYNC_URL=postgresql+asyncpg://user:password@db:5432/dbname
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=dbname
+      - DB_PORT=5432
+      - SCHEMA=magiceden
+      - SOURCE_API_URL=https://api-mainnet.magiceden.dev/v2
+#      - SECRET_KEY=aksdnaksfnaksfmasnfan
+#      - ALGORITHM=HS256
+#      - ENVIRONMENT=local
+    command: /bin/sh -c "alembic upgrade head && sleep infinity"
+    networks:
+      - master_degree_work_net
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dbname
+    volumes:
+      - dbdata:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    networks:
+      - master_degree_work_net
+
+networks:
+  master_degree_work_net:
+    external: true
+    name: master_degree_work_net
+
+volumes:
+  dbdata:
