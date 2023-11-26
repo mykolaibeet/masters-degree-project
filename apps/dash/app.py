@@ -212,11 +212,10 @@ def renderer(url):
     return url
 
 @callback(
-    Output("chrt-portfolio-main", "figure")[0],
-    Output("pie-top15", "figure")[1],
+    Output("chrt-portfolio-main", "figure"),
     Input("nft_url", "value"),
 )
-def analyzer():
+def analyzer(url):
     data = {'date': [1, 2, 3], 'price': [14, 15, 16]}
 
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
@@ -235,50 +234,7 @@ def analyzer():
             tickfont_size=12,
         ))
 
-    donut_top = go.Figure()
-    donut_top.layout.template = CHART_THEME
-    donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
-                                     title = {'text': "Score"},
-                                     value = index_score,
-                                     gauge = {'axis': {'range': [None, 10]},
-                                              'steps' : [
-                                                  {'range': [0, 2], 'color': "#e03030"},
-                                                  {'range': [2, 4], 'color': "#aa5500"},
-                                                  {'range': [4, 6], 'color': "#746100"},
-                                                  {'range': [6, 8], 'color': "#48601c"},
-                                                  {'range': [8, 10], 'color': "#2a5838"}],
-                                              'bar': {'color': "#d6d1d1"}}))
-    #donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
-    #donut_top.update_traces(textposition='outside', textinfo='label+value')
-    donut_top.update_layout(showlegend=False)
-    donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
-
-    return chart_ptfvalue, donut_top
-
-@callback(
-    Output("pie-top15", "figure"),
-    Input("nft_url", "value"),
-)
-def score():
-    donut_top = go.Figure()
-    donut_top.layout.template = CHART_THEME
-    donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
-                                     title = {'text': "Score"},
-                                     value = index_score,
-                                     gauge = {'axis': {'range': [None, 10]},
-                                              'steps' : [
-                                                  {'range': [0, 2], 'color': "#e03030"},
-                                                  {'range': [2, 4], 'color': "#aa5500"},
-                                                  {'range': [4, 6], 'color': "#746100"},
-                                                  {'range': [6, 8], 'color': "#48601c"},
-                                                  {'range': [8, 10], 'color': "#2a5838"}],
-                                              'bar': {'color': "#d6d1d1"}}))
-    #donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
-    #donut_top.update_traces(textposition='outside', textinfo='label+value')
-    donut_top.update_layout(showlegend=False)
-    donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
-
-    return donut_top
+    return chart_ptfvalue
 
 
 if __name__ == "__main__":
