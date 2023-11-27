@@ -12,8 +12,12 @@ def json_rpc_call(method, params):
     return response.json()
 
 if __name__ == "__main__":
-    result = json_rpc_call("process", {"token_mint": "AQj5FVcxDzbgpPNNVLmQnbPKqeCt9wMYG1qqBLdeTRh9"})
-    print("Result of process:", result["result"])
+    # url = "https://magiceden.io/item-details/DGyXPsvrcJjZW93ktoC1XkLqUDyVitEgpN7dXtTC8JPD?name=TOLY"
+
+    result = json_rpc_call("process", {
+        "url": "https://magiceden.io/item-details/DGyXPsvrcJjZW93ktoC1XkLqUDyVitEgpN7dXtTC8JPD?name=TOLY"
+    })
+    print("Result of process:", result)
 
     # result = json_rpc_call("subtract", {"a": 10, "b": 4})
     # print("Result of subtract:", result["result"])

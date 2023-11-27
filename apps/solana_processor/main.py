@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from pprint import pprint
 
 import requests
@@ -7,6 +8,7 @@ import logging
 from jsonrpcserver import Success, method, serve
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
+from urllib.parse import urlparse, parse_qs
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 # from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -62,18 +64,23 @@ class MagicEdenAPI:
     async def process(self):
         logger.info(f'Getting info for {self.token_mint}')
         metadata, activities = await asyncio.gather(self.get_metadata(), self.get_token_activities())
-        session = get_session(DATABASE_ASYNC_URL)
+        # session = get_session(DATABASE_ASYNC_URL)
         # token, is_created = get_or_create(session, Token, token_mint=metadata['mintAddress'])
-        token = await add_token(metadata, session)
-        activities = await add_activities(activities, session)
-        try:
-            await session.commit()
-            # return city
-        except IntegrityError as ex:
-            await session.rollback()
+        # token = await add_token(metadata, session)
+        # activities = await add_activities(activities, session)
+        # try:
+        #     await session.commit()
+        #     # return city
+        # except IntegrityError as ex:
+        #     await session.rollback()
             # raise DuplicatedEntryError("The city is already stored")
-
         breakpoint()
+        return {
+            'nft_name': metadata['name'],
+            'token_address': metadata['mintAddress'],
+            'dates': [str(datetime.fromtimestamp(activity['blockTime'])) for activity in activities],
+            'prices': [activity['price'] for activity in activities]
+        }
 
     # def get_collection_stats(self, collection_id):
     #     url = f"{self.base_url}/collections/{collection_id}/stats"
@@ -116,7 +123,7 @@ async def get_session(database_url: str):
         yield session
 
 
-def get_or_create(session, model, defaults=None, **kwargs):
+async def get_or_create(session, model, defaults=None, **kwargs):
     instance = await session.query(model).filter_by(**kwargs).one_or_none()
     if instance:
         return instance, False
@@ -134,11 +141,15 @@ def get_or_create(session, model, defaults=None, **kwargs):
         else:
             return instance, True
 
-# @method
-# def process(token_mint: str):
-#     test = await MagicEdenAPI(token_mint).process()
-#     breakpoint()
-#     return Success({'a': 1})
+@method
+def process(url: str):
+    # api =
+    # breakpoint()
+    parsed_url = urlparse(url)
+    token_mint = parsed_url.path.split('/')[-1]
+    # breakpoint()
+    data = asyncio.run(MagicEdenAPI(token_mint).process())
+    return Success(data)
 
 
 # collections = api.get_collections(limit=20)[:1]
@@ -165,9 +176,11 @@ def get_or_create(session, model, defaults=None, **kwargs):
 
 if __name__ == "__main__":
 
-    token_mint = 'AQj5FVcxDzbgpPNNVLmQnbPKqeCt9wMYG1qqBLdeTRh9'
-    api = MagicEdenAPI(token_mint)
-    asyncio.run(api.process())
-
+    # token_mint = 'AQj5FVcxDzbgpPNNVLmQnbPKqeCt9wMYG1qqBLdeTRh9'
+    # api = MagicEdenAPI(token_mint)
+    # asyncio.run(api.process())
+    # test = asyncio.run(MagicEdenAPI(token_mint).process())
+    # breakpoint()
+    serve()
     # test =
-    breakpoint()
+    # breakpoint()
