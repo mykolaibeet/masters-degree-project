@@ -9,10 +9,11 @@ from dash import dash_table
 import requests
 import re
 import pandas as pd
+import requests
 
 CHART_THEME = 'plotly_white'  # others examples: seaborn, ggplot2, plotly_dark
 chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
-chart_ptfvalue.add_trace(go.Scatter(x=[1, 2, 3], y=[4, 5, 6],
+chart_ptfvalue.add_trace(go.Scatter(x=[0], y=[0],
                                     mode='lines',  # you can also use "lines+markers", or just "markers"
                                     name='Global Value'))
 chart_ptfvalue.layout.template = CHART_THEME
@@ -32,7 +33,7 @@ indicators_ptf = go.Figure()
 indicators_ptf.layout.template = CHART_THEME
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 1,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
     delta = {'position': "bottom", 'reference': 1, 'relative': False},
@@ -40,7 +41,7 @@ indicators_ptf.add_trace(go.Indicator(
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 2,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
     delta = {'position': "bottom", 'reference': 2, 'relative': False},
@@ -48,7 +49,7 @@ indicators_ptf.add_trace(go.Indicator(
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 3,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
     delta = {'position': "bottom", 'reference': 3, 'relative': False},
@@ -56,7 +57,7 @@ indicators_ptf.add_trace(go.Indicator(
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 4,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
     delta = {'position': "bottom", 'reference': 4, 'relative': False},
@@ -72,28 +73,28 @@ indicators_sp500 = go.Figure()
 indicators_sp500.layout.template = CHART_THEME
 indicators_sp500.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 1,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
     domain = {'row': 0, 'column': 0}))
 
 indicators_sp500.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 2,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
     domain = {'row': 1, 'column': 0}))
 
 indicators_sp500.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 3,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
     domain = {'row': 2, 'column': 0}))
 
 indicators_sp500.add_trace(go.Indicator(
     mode = "number+delta",
-    value = 4,
+    value = 0,
     number = {'suffix': " %"},
     title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
     domain = {'row': 3, 'column': 1}))
@@ -107,13 +108,13 @@ indicators_sp500.update_layout(
 fig_growth2 = go.Figure()
 fig_growth2.layout.template = CHART_THEME
 fig_growth2.add_trace(go.Bar(
-    x=[1, 2, 3],
-    y=[4, 5, 6],
+    x=[0],
+    y=[0],
     name='Portfolio'
 ))
 fig_growth2.add_trace(go.Bar(
-    x=[1, 2, 3],
-    y=[4, 5, 6],
+    x=[0],
+    y=[0],
     name='S&P 500',
 ))
 fig_growth2.update_layout(barmode='group')
@@ -138,7 +139,7 @@ donut_top = go.Figure()
 donut_top.layout.template = CHART_THEME
 donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
                                  title = {'text': "Score"},
-                                 value = 6,
+                                 value = 0,
                                  gauge = {'axis': {'range': [None, 10]},
                                           'steps' : [
                                               {'range': [0, 2], 'color': "#e03030"},
@@ -204,9 +205,21 @@ app.layout = dbc.Container(
         
     ], fluid=True)
 
+def json_rpc_call(method, params):
+    url = "http://localhost:5000"
+    payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1,
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
+
 @callback(
     Output("nft_render", "src"),
     Input("nft_url", "value"),
+    prevent_initial_call=True
 )
 def renderer(url):
     return url
@@ -214,12 +227,14 @@ def renderer(url):
 @callback(
     Output("chrt-portfolio-main", "figure"),
     Input("nft_url", "value"),
+    prevent_initial_call=True
 )
 def analyzer(url):
-    data = {'date': [1, 2, 3], 'price': [14, 15, 16]}
+
+    data = json_rpc_call("process", {"url": url})
 
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
-    chart_ptfvalue.add_trace(go.Scatter(x=data['date'], y=data['price'],
+    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'],
                                         mode='lines',  # you can also use "lines+markers", or just "markers"
                                         name='Global Value'))
     chart_ptfvalue.layout.template = CHART_THEME
