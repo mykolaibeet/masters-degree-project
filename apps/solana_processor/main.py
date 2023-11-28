@@ -74,7 +74,7 @@ class MagicEdenAPI:
         # except IntegrityError as ex:
         #     await session.rollback()
             # raise DuplicatedEntryError("The city is already stored")
-        breakpoint()
+        # breakpoint()
         return {
             'nft_name': metadata['name'],
             'token_address': metadata['mintAddress'],
@@ -147,7 +147,7 @@ def process(url: str):
     # breakpoint()
     parsed_url = urlparse(url)
     token_mint = parsed_url.path.split('/')[-1]
-    # breakpoint()
+    print(f"{token_mint=}")
     data = asyncio.run(MagicEdenAPI(token_mint).process())
     return Success(data)
 

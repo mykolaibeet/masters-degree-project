@@ -3,13 +3,13 @@ version: "3"
 services:
   solana_processor:
     build:
-      context: ./apps/solana_processor
-      dockerfile: ./
+      context: ./apps/solana_processor/
+#      dockerfile: .
     image: solana_processor
     volumes:
       - ./apps/solana_processor:/opt/app
     ports:
-      - "8000:8000"
+      - "5003:5000"
     depends_on:
       - db
     environment:
@@ -25,6 +25,20 @@ services:
 #      - ALGORITHM=HS256
 #      - ENVIRONMENT=local
     command: /bin/sh -c "alembic upgrade head && sleep infinity"
+    networks:
+      - master_degree_work_net
+
+  dash:
+    build:
+      context: ./apps/dash/
+#      dockerfile: .
+    image: dash
+    volumes:
+      - ./apps/dash:/opt/app
+    ports:
+      - "8050:8050"
+    depends_on:
+      - solana_processor
     networks:
       - master_degree_work_net
 
