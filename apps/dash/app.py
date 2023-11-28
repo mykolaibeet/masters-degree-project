@@ -202,11 +202,12 @@ app.layout = dbc.Container(
                       style={'height':380}),
             ], width={'size': 4, 'offset': 0, 'order': 2}),  # width second column on second row
         ])  # end of third row
-        
+
     ], fluid=True)
 
 def json_rpc_call(method, params):
-    url = "http://localhost:5000"
+    url = "http://solana_processor:5000"
+
     payload = {
         "jsonrpc": "2.0",
         "method": method,
@@ -233,8 +234,12 @@ def analyzer(url):
 
     data = json_rpc_call("process", {"url": url})
 
+    data = data['result']
+    from pprint import pprint
+    pprint(data)
+
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
-    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'],
+    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'].reverse(),
                                         mode='lines',  # you can also use "lines+markers", or just "markers"
                                         name='Global Value'))
     chart_ptfvalue.layout.template = CHART_THEME
