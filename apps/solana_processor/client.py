@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # url = "https://magiceden.io/item-details/DGyXPsvrcJjZW93ktoC1XkLqUDyVitEgpN7dXtTC8JPD?name=TOLY"
 
     result = json_rpc_call("process", {
-        "url": "https://magiceden.io/item-details/DGyXPsvrcJjZW93ktoC1XkLqUDyVitEgpN7dXtTC8JPD?name=TOLY"
+        "url": "https://magiceden.io/item-details/eJEeTsYg315ZfWPKvrfaZDwopL5hytvPt559cnpptUZ?name=Fox-%23620"
     })
     print("Result of process:", result)
 

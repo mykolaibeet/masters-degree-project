@@ -206,6 +206,7 @@ app.layout = dbc.Container(
     ], fluid=True)
 
 def json_rpc_call(method, params):
+
     url = f"{SOLANA_HOST}"
 
     payload = {
@@ -233,8 +234,8 @@ def renderer(url):
 def history(url):
 
     data = json_rpc_call("process", {"url": url})
-
     data = data['result']
+
 
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
     chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'],

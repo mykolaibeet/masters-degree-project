@@ -3,3 +3,5 @@ alembic
 sqlalchemy[asyncio]
 jsonrpcserver
 psycopg2
+aiohttp
+asyncpg

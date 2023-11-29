@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Token, Activity, PriceInfo
+from models import Token, Activity, PriceInfo, Collection
 
 
 async def add_token(metadata: dict, session: AsyncSession):
@@ -40,3 +40,10 @@ async def add_activities(activities: list, session: AsyncSession):
             decimals=activity['priceInfo']['solPrice']['decimals']
         )
         session.add(new_activity)
+
+
+async def get_collection(session: AsyncSession, symbol: str) -> Collection:
+    result = await session.execute(
+        select(Collection).filter(Collection.symbol == symbol)
+    )
+    return result.scalars().first()

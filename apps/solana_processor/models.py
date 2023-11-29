@@ -75,3 +75,20 @@ class PriceInfo(Base):
     modified_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
     activity = relationship('Activity', back_populates='price_info')
+
+
+class Collection(Base):
+    __tablename__ = 'collections'
+    __table_args__ = {'schema': SCHEMA}
+
+    id = Column(Integer, Sequence(f'{__tablename__}_id_seq', schema=SCHEMA), primary_key=True, nullable=False)
+    symbol = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    has_website = Column(Boolean, default=False)
+    has_discord = Column(Boolean, default=False)
+    has_twitter = Column(Boolean, default=False)
+    is_badged = Column(Boolean, default=False)
+
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    modified_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
