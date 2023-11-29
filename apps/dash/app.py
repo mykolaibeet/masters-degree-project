@@ -171,20 +171,20 @@ app.layout = dbc.Container(
             html.Iframe(id="nft_render", height=575, width=950),
             html.Hr(),
             ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
-            dbc.Col([  # second column on second row
-            html.H5('Best Offers Changes', className='text-center'),
-            dcc.Graph(id='indicators-ptf',
-                      figure=indicators_ptf,
-                      style={'height':550}),
-            html.Hr()
-            ], width={'size': 2, 'offset': 0, 'order': 2}),  # width second column on second row
+            # dbc.Col([  # second column on second row
+            # html.H5('Best Offers Changes', className='text-center'),
+            # dcc.Graph(id='indicators-ptf',
+            #           figure=indicators_ptf,
+            #           style={'height':550}),
+            # html.Hr()
+            # ], width={'size': 2, 'offset': 0, 'order': 2}),  # width second column on second row
             dbc.Col([  # third column on second row
             html.H5('Social media', className='text-center'),
             dcc.Graph(id='indicators-sm',
                       figure=indicators_social_media,
                       style={'height':550}),
             html.Hr()
-            ], width={'size': 2, 'offset': 0, 'order': 3}),  # width third column on second row
+            ], width={'size': 4, 'offset': 0, 'order': 3}),  # width third column on second row
         ]),  # end of second row
 
         dbc.Row([  # start of third row
@@ -310,55 +310,55 @@ def score(url):
 
     return donut_top
 
-@callback(
-    Output("indicators-ptf", "figure"),
-    Input("nft_url", "value"),
-    prevent_initial_call=True
-)
-def indicator_1(url):
-
-    data = json_rpc_call("process", {"url": url})
-
-    data = data['result']
-
-
-
-    indicators_ptf = go.Figure()
-    indicators_ptf.layout.template = CHART_THEME
-    indicators_ptf.add_trace(go.Indicator(
-        mode = "number+delta",
-        value = data['prices'][-1],
-        title = {"text": "<br><span style='font-size:0.7em;color:gray'>1 Changes</span>"},
-        delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
-        domain = {'row': 0, 'column': 0}))
-
-    indicators_ptf.add_trace(go.Indicator(
-        mode = "number+delta",
-        value = data['prices'][-2],
-        title = {"text": "<span style='font-size:0.7em;color:gray'>5 Changes</span>"},
-        delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
-        domain = {'row': 1, 'column': 0}))
-
-    indicators_ptf.add_trace(go.Indicator(
-        mode = "number+delta",
-        value = data['prices'][-3],
-        title = {"text": "<span style='font-size:0.7em;color:gray'>10 Changes</span>"},
-        delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
-        domain = {'row': 2, 'column': 0}))
-
-    indicators_ptf.add_trace(go.Indicator(
-        mode = "number+delta",
-        value = data['prices'][-4],
-        title = {"text": "<span style='font-size:0.7em;color:gray'>30 Changes</span>"},
-        delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
-        domain = {'row': 3, 'column': 1}))
-
-    indicators_ptf.update_layout(
-        grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
-        margin=dict(l=50, r=50, t=30, b=30)
-    )
-
-    return indicators_ptf
+# @callback(
+#     Output("indicators-ptf", "figure"),
+#     Input("nft_url", "value"),
+#     prevent_initial_call=True
+# )
+# def indicator_1(url):
+#
+#     data = json_rpc_call("process", {"url": url})
+#
+#     data = data['result']
+#
+#
+#
+#     indicators_ptf = go.Figure()
+#     indicators_ptf.layout.template = CHART_THEME
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = data['prices'][-1],
+#         title = {"text": "<br><span style='font-size:0.7em;color:gray'>1 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 0, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = data['prices'][-2],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>5 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 1, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = data['prices'][-3],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>10 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 2, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = data['prices'][-4],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>30 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 3, 'column': 1}))
+#
+#     indicators_ptf.update_layout(
+#         grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+#         margin=dict(l=50, r=50, t=30, b=30)
+#     )
+#
+#     return indicators_ptf
 
 @callback(
     Output("indicators-sm", "figure"),
