@@ -10,6 +10,7 @@ import requests
 import re
 import pandas as pd
 import requests
+import statistics
 
 CHART_THEME = 'plotly_white'  # others examples: seaborn, ggplot2, plotly_dark
 chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
@@ -35,32 +36,32 @@ indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
     value = 0,
     number = {'suffix': " %"},
-    title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
-    delta = {'position': "bottom", 'reference': 1, 'relative': False},
+    title = {"text": "<br><span style='font-size:0.7em;color:gray'>1 Changes</span>"},
+    delta = {'position': "bottom", 'reference': 0, 'relative': False},
     domain = {'row': 0, 'column': 0}))
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
     value = 0,
     number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
-    delta = {'position': "bottom", 'reference': 2, 'relative': False},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>5 Changes</span>"},
+    delta = {'position': "bottom", 'reference': 0, 'relative': False},
     domain = {'row': 1, 'column': 0}))
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
     value = 0,
     number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
-    delta = {'position': "bottom", 'reference': 3, 'relative': False},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>10 Changes</span>"},
+    delta = {'position': "bottom", 'reference': 0, 'relative': False},
     domain = {'row': 2, 'column': 0}))
 
 indicators_ptf.add_trace(go.Indicator(
     mode = "number+delta",
     value = 0,
     number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
-    delta = {'position': "bottom", 'reference': 4, 'relative': False},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>30 Changes</span>"},
+    delta = {'position': "bottom", 'reference': 0, 'relative': False},
     domain = {'row': 3, 'column': 1}))
 
 indicators_ptf.update_layout(
@@ -69,37 +70,33 @@ indicators_ptf.update_layout(
 )
 
 
-indicators_sp500 = go.Figure()
-indicators_sp500.layout.template = CHART_THEME
-indicators_sp500.add_trace(go.Indicator(
-    mode = "number+delta",
+indicators_social_media = go.Figure()
+indicators_social_media.layout.template = CHART_THEME
+indicators_social_media.add_trace(go.Indicator(
+    mode = "number",
     value = 0,
-    number = {'suffix': " %"},
-    title = {"text": "<br><span style='font-size:0.7em;color:gray'>7 Days</span>"},
+    title = {"text": "<br><span style='font-size:0.7em;color:gray'>Discord</span>"},
     domain = {'row': 0, 'column': 0}))
 
-indicators_sp500.add_trace(go.Indicator(
-    mode = "number+delta",
+indicators_social_media.add_trace(go.Indicator(
+    mode = "number",
     value = 0,
-    number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>Twitter</span>"},
     domain = {'row': 1, 'column': 0}))
 
-indicators_sp500.add_trace(go.Indicator(
-    mode = "number+delta",
+indicators_social_media.add_trace(go.Indicator(
+    mode = "number",
     value = 0,
-    number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>Website</span>"},
     domain = {'row': 2, 'column': 0}))
 
-indicators_sp500.add_trace(go.Indicator(
-    mode = "number+delta",
+indicators_social_media.add_trace(go.Indicator(
+    mode = "number",
     value = 0,
-    number = {'suffix': " %"},
-    title = {"text": "<span style='font-size:0.7em;color:gray'>200 Days</span>"},
+    title = {"text": "<span style='font-size:0.7em;color:gray'>Badges</span>"},
     domain = {'row': 3, 'column': 1}))
 
-indicators_sp500.update_layout(
+indicators_social_media.update_layout(
     grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
     margin=dict(l=50, r=50, t=30, b=30)
 )
@@ -172,16 +169,16 @@ app.layout = dbc.Container(
             html.Hr(),
             ], width={'size': 8, 'offset': 0, 'order': 1}),  # width first column on second row
             dbc.Col([  # second column on second row
-            html.H5('Portfolio', className='text-center'),
+            html.H5('Changes', className='text-center'),
             dcc.Graph(id='indicators-ptf',
                       figure=indicators_ptf,
                       style={'height':550}),
             html.Hr()
             ], width={'size': 2, 'offset': 0, 'order': 2}),  # width second column on second row
             dbc.Col([  # third column on second row
-            html.H5('S&P500', className='text-center'),
-            dcc.Graph(id='indicators-sp',
-                      figure=indicators_sp500,
+            html.H5('Social media', className='text-center'),
+            dcc.Graph(id='indicators-sm',
+                      figure=indicators_social_media,
                       style={'height':550}),
             html.Hr()
             ], width={'size': 2, 'offset': 0, 'order': 3}),  # width third column on second row
@@ -206,7 +203,7 @@ app.layout = dbc.Container(
     ], fluid=True)
 
 def json_rpc_call(method, params):
-    url = "http://solana_processor:5000"
+    url = "http://solana-processor:5000"
 
     payload = {
         "jsonrpc": "2.0",
@@ -230,16 +227,14 @@ def renderer(url):
     Input("nft_url", "value"),
     prevent_initial_call=True
 )
-def analyzer(url):
+def history(url):
 
     data = json_rpc_call("process", {"url": url})
 
     data = data['result']
-    from pprint import pprint
-    pprint(data)
 
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
-    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'].reverse(),
+    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'],
                                         mode='lines',  # you can also use "lines+markers", or just "markers"
                                         name='Global Value'))
     chart_ptfvalue.layout.template = CHART_THEME
@@ -256,6 +251,156 @@ def analyzer(url):
 
     return chart_ptfvalue
 
+@callback(
+    Output("pie-top15", "figure"),
+    Input("nft_url", "value"),
+    prevent_initial_call=True
+)
+def score(url):
+
+    data = json_rpc_call("process", {"url": url})
+
+    data = data['result']
+
+    price_median_weight = 0.01
+    offer_weight = 0.01
+    discord_weight = 1.5
+    website_weight = 2.0
+    twitter_weight = 1.5
+    badge_weight = 3.0
+
+    price_median = statistics.median(data['prices'])
+    price_max = max(data['prices'])
+    price_min = min(data['prices'])
+    price_score = min(100, ((price_median * price_max) / 100)) * price_median_weight
+    #
+    # offer_score = min(100, (data['last_offer'] * price_max) / 100) * offer_weight
+    #
+    # discord_score = data['isDiscord'] * discord_weight
+    #
+    # website_score = data['isSite'] * website_weight
+    #
+    # twitter_score = data['isTwitter'] * twitter_weight
+    #
+    # badge_score = data['isBadget'] * badge_weight
+
+    score = price_score # + offer_score + discord_score + website_score + twitter_score + badge_score
+
+    donut_top = go.Figure()
+    donut_top.layout.template = CHART_THEME
+    donut_top.add_trace(go.Indicator(mode = "gauge+number+delta",
+                                     title = {'text': "Score"},
+                                     value = score,
+                                     gauge = {'axis': {'range': [None, 10]},
+                                              'steps' : [
+                                                  {'range': [0, 2], 'color': "#e03030"},
+                                                  {'range': [2, 4], 'color': "#aa5500"},
+                                                  {'range': [4, 6], 'color': "#746100"},
+                                                  {'range': [6, 8], 'color': "#48601c"},
+                                                  {'range': [8, 10], 'color': "#2a5838"}],
+                                              'bar': {'color': "#d6d1d1"}}))
+    #donut_top.update_traces(hole=.4, hoverinfo="label+value+percent")
+    #donut_top.update_traces(textposition='outside', textinfo='label+value')
+    donut_top.update_layout(showlegend=False)
+    donut_top.update_layout(margin = dict(t=50, b=50, l=25, r=25))
+
+    return donut_top
+
+# @callback(
+#     Output("indicators-ptf", "figure"),
+#     Input("nft_url", "value"),
+#     prevent_initial_call=True
+# )
+# def indicator_1(url):
+#
+#     data = json_rpc_call("process", {"url": url})
+#
+#     data = data['result']
+#
+#     indicators_ptf = go.Figure()
+#     indicators_ptf.layout.template = CHART_THEME
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = data['prices'][-1],
+#         number = {'suffix': " "},
+#         title = {"text": "<br><span style='font-size:0.7em;color:gray'>1 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 0, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = 0,
+#         number = {'suffix': " %"},
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>5 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 1, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = 0,
+#         number = {'suffix': " %"},
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>10 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 2, 'column': 0}))
+#
+#     indicators_ptf.add_trace(go.Indicator(
+#         mode = "number+delta",
+#         value = 0,
+#         number = {'suffix': " %"},
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>30 Changes</span>"},
+#         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
+#         domain = {'row': 3, 'column': 1}))
+#
+#     indicators_ptf.update_layout(
+#         grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+#         margin=dict(l=50, r=50, t=30, b=30)
+#     )
+#
+#     return indicators_ptf
+#
+# @callback(
+#     Output("indicators-sm", "figure"),
+#     Input("nft_url", "value"),
+#     prevent_initial_call=True
+# )
+# def indicator_2(url):
+#
+#     data = json_rpc_call("process", {"url": url})
+#
+#     data = data['result']
+#
+#     indicators_social_media = go.Figure()
+#     indicators_social_media.layout.template = CHART_THEME
+#     indicators_social_media.add_trace(go.Indicator(
+#         mode = "number",
+#         value = data['isDiscord'],
+#         title = {"text": "<br><span style='font-size:0.7em;color:gray'>Discord</span>"},
+#         domain = {'row': 0, 'column': 0}))
+#
+#     indicators_social_media.add_trace(go.Indicator(
+#         mode = "number",
+#         value = data['isTwitter'],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>Twitter</span>"},
+#         domain = {'row': 1, 'column': 0}))
+#
+#     indicators_social_media.add_trace(go.Indicator(
+#         mode = "number",
+#         value = data['isSite'],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>Website</span>"},
+#         domain = {'row': 2, 'column': 0}))
+#
+#     indicators_social_media.add_trace(go.Indicator(
+#         mode = "number",
+#         value = data['isBadget'],
+#         title = {"text": "<span style='font-size:0.7em;color:gray'>Badges</span>"},
+#         domain = {'row': 3, 'column': 1}))
+#
+#     indicators_social_media.update_layout(
+#         grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+#         margin=dict(l=50, r=50, t=30, b=30)
+#     )
+#
+#     return indicators_social_media
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8050, use_reloader=True)
