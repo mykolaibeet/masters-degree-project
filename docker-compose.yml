@@ -41,6 +41,9 @@ services:
       - "8051:8050"
     depends_on:
       - solana_processor
+    environment:
+      - SOLANA_HOST=http://solana_processor:5000
+    command: /bin/sh -c "python app.py"
     networks:
       - master_degree_work_net
 

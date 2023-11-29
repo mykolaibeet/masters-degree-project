@@ -277,16 +277,16 @@ def score(url):
     price_max = max(data['prices'])
     price_min = min(data['prices'])
     price_score = min(100, ((price_median * price_max) / 100)) * price_median_weight
-    #
-    # offer_score = min(100, (data['last_offer'] * price_max) / 100) * offer_weight
-    #
-    # discord_score = data['isDiscord'] * discord_weight
-    #
-    # website_score = data['isSite'] * website_weight
-    #
-    # twitter_score = data['isTwitter'] * twitter_weight
-    #
-    # badge_score = data['isBadget'] * badge_weight
+
+    offer_score = min(100, (data['last_offer'] * price_max) / 100) * offer_weight
+
+    discord_score = data['has_discord'] * discord_weight
+
+    website_score = data['has_website'] * website_weight
+
+    twitter_score = data['has_twitter'] * twitter_weight
+
+    badge_score = data['is_badget'] * badge_weight
 
     score = price_score # + offer_score + discord_score + website_score + twitter_score + badge_score
 
@@ -326,31 +326,27 @@ def score(url):
 #     indicators_ptf.add_trace(go.Indicator(
 #         mode = "number+delta",
 #         value = data['prices'][-1],
-#         number = {'suffix': " "},
 #         title = {"text": "<br><span style='font-size:0.7em;color:gray'>1 Changes</span>"},
 #         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
 #         domain = {'row': 0, 'column': 0}))
 #
 #     indicators_ptf.add_trace(go.Indicator(
 #         mode = "number+delta",
-#         value = 0,
-#         number = {'suffix': " %"},
+#         value = data['prices'][-1],
 #         title = {"text": "<span style='font-size:0.7em;color:gray'>5 Changes</span>"},
 #         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
 #         domain = {'row': 1, 'column': 0}))
 #
 #     indicators_ptf.add_trace(go.Indicator(
 #         mode = "number+delta",
-#         value = 0,
-#         number = {'suffix': " %"},
+#         value = data['prices'][-1],
 #         title = {"text": "<span style='font-size:0.7em;color:gray'>10 Changes</span>"},
 #         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
 #         domain = {'row': 2, 'column': 0}))
 #
 #     indicators_ptf.add_trace(go.Indicator(
 #         mode = "number+delta",
-#         value = 0,
-#         number = {'suffix': " %"},
+#         value = data['prices'][-1],
 #         title = {"text": "<span style='font-size:0.7em;color:gray'>30 Changes</span>"},
 #         delta = {'position': "bottom", 'reference': data['prices'][-1], 'relative': False},
 #         domain = {'row': 3, 'column': 1}))
@@ -361,50 +357,50 @@ def score(url):
 #     )
 #
 #     return indicators_ptf
-#
-# @callback(
-#     Output("indicators-sm", "figure"),
-#     Input("nft_url", "value"),
-#     prevent_initial_call=True
-# )
-# def indicator_2(url):
-#
-#     data = json_rpc_call("process", {"url": url})
-#
-#     data = data['result']
-#
-#     indicators_social_media = go.Figure()
-#     indicators_social_media.layout.template = CHART_THEME
-#     indicators_social_media.add_trace(go.Indicator(
-#         mode = "number",
-#         value = data['isDiscord'],
-#         title = {"text": "<br><span style='font-size:0.7em;color:gray'>Discord</span>"},
-#         domain = {'row': 0, 'column': 0}))
-#
-#     indicators_social_media.add_trace(go.Indicator(
-#         mode = "number",
-#         value = data['isTwitter'],
-#         title = {"text": "<span style='font-size:0.7em;color:gray'>Twitter</span>"},
-#         domain = {'row': 1, 'column': 0}))
-#
-#     indicators_social_media.add_trace(go.Indicator(
-#         mode = "number",
-#         value = data['isSite'],
-#         title = {"text": "<span style='font-size:0.7em;color:gray'>Website</span>"},
-#         domain = {'row': 2, 'column': 0}))
-#
-#     indicators_social_media.add_trace(go.Indicator(
-#         mode = "number",
-#         value = data['isBadget'],
-#         title = {"text": "<span style='font-size:0.7em;color:gray'>Badges</span>"},
-#         domain = {'row': 3, 'column': 1}))
-#
-#     indicators_social_media.update_layout(
-#         grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
-#         margin=dict(l=50, r=50, t=30, b=30)
-#     )
-#
-#     return indicators_social_media
+
+@callback(
+    Output("indicators-sm", "figure"),
+    Input("nft_url", "value"),
+    prevent_initial_call=True
+)
+def indicator_2(url):
+
+    data = json_rpc_call("process", {"url": url})
+
+    data = data['result']
+
+    indicators_social_media = go.Figure()
+    indicators_social_media.layout.template = CHART_THEME
+    indicators_social_media.add_trace(go.Indicator(
+        mode = "number",
+        value = data['has_discord'],
+        title = {"text": "<br><span style='font-size:0.7em;color:gray'>Discord</span>"},
+        domain = {'row': 0, 'column': 0}))
+
+    indicators_social_media.add_trace(go.Indicator(
+        mode = "number",
+        value = data['has_twitter'],
+        title = {"text": "<span style='font-size:0.7em;color:gray'>Twitter</span>"},
+        domain = {'row': 1, 'column': 0}))
+
+    indicators_social_media.add_trace(go.Indicator(
+        mode = "number",
+        value = data['has_website'],
+        title = {"text": "<span style='font-size:0.7em;color:gray'>Website</span>"},
+        domain = {'row': 2, 'column': 0}))
+
+    indicators_social_media.add_trace(go.Indicator(
+        mode = "number",
+        value = data['is_badget'],
+        title = {"text": "<span style='font-size:0.7em;color:gray'>Badges</span>"},
+        domain = {'row': 3, 'column': 1}))
+
+    indicators_social_media.update_layout(
+        grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+        margin=dict(l=50, r=50, t=30, b=30)
+    )
+
+    return indicators_social_media
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8050, use_reloader=True)
