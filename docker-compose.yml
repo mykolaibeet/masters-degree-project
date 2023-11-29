@@ -15,6 +15,7 @@ services:
     environment:
 #      - DATABASE_URL=postgresql://user:password@db:5432/dbname
 #      - DATABASE_ASYNC_URL=postgresql+asyncpg://user:password@db:5432/dbname
+      - DB_HOST=db
       - DB_USER=user
       - DB_PASSWORD=password
       - DB_NAME=dbname
@@ -24,9 +25,10 @@ services:
 #      - SECRET_KEY=aksdnaksfnaksfmasnfan
 #      - ALGORITHM=HS256
 #      - ENVIRONMENT=local
-    command: /bin/sh -c "alembic upgrade head && sleep infinity"
+    command: /bin/sh -c "alembic upgrade head && python main.py"
     networks:
       - master_degree_work_net
+    restart: always
 
   dash:
     build:
@@ -36,7 +38,7 @@ services:
     volumes:
       - ./apps/dash:/opt/app
     ports:
-      - "8050:8050"
+      - "8051:8050"
     depends_on:
       - solana_processor
     networks:
@@ -54,6 +56,7 @@ services:
       - "5432:5432"
     networks:
       - master_degree_work_net
+    restart: always
 
 networks:
   master_degree_work_net:

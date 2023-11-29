@@ -47,6 +47,9 @@ spec:
             - name: http
               containerPort: 8050
               protocol: TCP
+          env:
+            - name: SOLANA_HOST
+              value: "http://solana-processor:5000"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

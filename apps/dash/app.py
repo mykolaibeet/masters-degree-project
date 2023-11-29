@@ -11,6 +11,9 @@ import re
 import pandas as pd
 import requests
 import statistics
+import os
+
+SOLANA_HOST = os.getenv('SOLANA_HOST')
 
 CHART_THEME = 'plotly_white'  # others examples: seaborn, ggplot2, plotly_dark
 chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
@@ -203,7 +206,7 @@ app.layout = dbc.Container(
     ], fluid=True)
 
 def json_rpc_call(method, params):
-    url = "http://solana-processor:5000"
+    url = f"{SOLANA_HOST}"
 
     payload = {
         "jsonrpc": "2.0",
