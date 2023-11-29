@@ -1,4 +1,6 @@
 import asyncio
+import aiohttp
+
 from datetime import datetime
 from pprint import pprint
 
@@ -18,7 +20,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 # from common.db import get_or_create
 from config import SOURCE_API_URL, DATABASE_ASYNC_URL
 from models import Token, Activity, PriceInfo
-from service import add_token, add_activities
+from service import add_token, add_activities, get_collection
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -28,6 +30,39 @@ class MagicEdenAPI:
     def __init__(self, token_mint: str):
         self.base_url = SOURCE_API_URL
         self.token_mint = token_mint
+
+    async def get_collections(self):
+        url = f"{self.base_url}/collections"
+        collections = {}
+        is_not_empty = True
+        limit = 500
+        start = 0
+        stop = 10 * limit
+        process_again = []
+        while is_not_empty or process_again:
+            async with aiohttp.ClientSession() as session:
+                result = []
+                tasks = [
+                    session.get(url, params={'limit': limit, 'offset': offset}) for offset in range(start, stop, limit)
+                ] if is_not_empty else process_again
+                responses = await asyncio.gather(*tasks)
+                for response in responses:
+                    if response.status == 200:
+                        result.append(await response.json())
+                        response.close()
+                    else:
+                        logger.warning(f'Failed to process {str(response.url)}, url will be processed again')
+                        process_again.append(str(response.url))
+
+                start = stop
+                stop += 10 * limit
+                is_not_empty = all(result)
+                for page in result:
+                    for item in page:
+                        collections[item['symbol']] = item
+        return collections
+
+
 
     async def get_metadata(self):
         url = f"{self.base_url}/tokens/{self.token_mint}"
@@ -64,7 +99,14 @@ class MagicEdenAPI:
     async def process(self):
         logger.info(f'Getting info for {self.token_mint}')
         metadata, activities = await asyncio.gather(self.get_metadata(), self.get_token_activities())
-        # session = get_session(DATABASE_ASYNC_URL)
+        # breakpoint()
+        async_session = get_session(DATABASE_ASYNC_URL)
+        async with async_session() as session:
+            async with session.begin():
+                collection = await get_collection(session, metadata['collection'])
+                # breakpoint()
+
+
         # token, is_created = get_or_create(session, Token, token_mint=metadata['mintAddress'])
         # token = await add_token(metadata, session)
         # activities = await add_activities(activities, session)
@@ -73,13 +115,31 @@ class MagicEdenAPI:
         #     # return city
         # except IntegrityError as ex:
         #     await session.rollback()
-            # raise DuplicatedEntryError("The city is already stored")
+        # raise DuplicatedEntryError("The city is already stored")
+        buy_now_activities = filter(lambda x: x['type'] == 'buyNow', activities)
+        latest_bid_activity = next(filter(lambda x: x['type'] == 'bid', activities))
+        # breakpoint()
+
+        dates = []
+        prices = []
+
+        for activity in buy_now_activities:
+            dates.append(str(datetime.fromtimestamp(activity['blockTime'])))
+            prices.append(activity['price'])
+
+        dates.reverse()
+        prices.reverse()
         # breakpoint()
         return {
             'nft_name': metadata['name'],
             'token_address': metadata['mintAddress'],
-            'dates': [str(datetime.fromtimestamp(activity['blockTime'])) for activity in activities],
-            'prices': [activity['price'] for activity in activities]
+            'dates': dates,
+            'prices': prices,
+            'last_offer': latest_bid_activity['price'],
+            'has_discord': int(collection.has_discord),
+            'has_website': int(collection.has_website),
+            'has_twitter': int(collection.has_twitter),
+            'is_badged': int(collection.is_badged),
         }
 
     # def get_collection_stats(self, collection_id):
@@ -116,11 +176,10 @@ class MagicEdenAPI:
 
 # Example usage:
 
-async def get_session(database_url: str):
+def get_session(database_url: str):
     engine = create_async_engine(database_url, echo=True)
-    Session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
-    async with Session() as session:
-        yield session
+    async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+    return async_session
 
 
 async def get_or_create(session, model, defaults=None, **kwargs):
@@ -147,8 +206,8 @@ def process(url: str):
     # breakpoint()
     parsed_url = urlparse(url)
     token_mint = parsed_url.path.split('/')[-1]
-    print(f"{token_mint=}")
     data = asyncio.run(MagicEdenAPI(token_mint).process())
+    logger.info(f'Response: {data}')
     return Success(data)
 
 

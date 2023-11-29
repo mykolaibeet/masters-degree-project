@@ -237,7 +237,7 @@ def analyzer(url):
     pprint(data)
 
     chart_ptfvalue = go.Figure()  # generating a figure that will be updated in the following lines
-    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'].reverse(),
+    chart_ptfvalue.add_trace(go.Scatter(x=data['dates'], y=data['prices'],
                                         mode='lines',  # you can also use "lines+markers", or just "markers"
                                         name='Global Value'))
     chart_ptfvalue.layout.template = CHART_THEME
