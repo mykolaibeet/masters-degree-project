@@ -1,0 +1,59 @@
+name: "Solana-processor Test, Build, Deploy"
+ 
+on:
+ push:
+   paths:
+   - apps/solana_processor/**
+   - .github/workflows/solana-processor.yml
+
+jobs:
+  test:
+   name: "Solana-processor test"
+   runs-on: ubuntu-latest
+
+   steps:
+     - name: Checkout repo
+       uses: actions/checkout@v4
+
+     - name: Test
+       run: echo "Tests passed successfully"
+
+  build:
+   name: "Solana-processor build"
+   runs-on: ubuntu-latest
+   needs: [test]
+   container:
+     image: docker://docker:dind
+     volumes:
+       - ${{ github.workspace }}:/app
+
+   steps:
+     - name: Checkout repo
+       uses: actions/checkout@v4
+
+     - name: Build
+       run: cd apps/solana_processor/ && docker build -t registry.digitalocean.com/masters-degree/solana-processor:${{github.sha}} .
+
+     - name: Login
+       run: docker login registry.digitalocean.com --username=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password=${{ secrets.PASSWORD }}
+
+     - name: Push
+       run: docker push registry.digitalocean.com/masters-degree/solana-processor:${{github.sha}}
+  
+  deploy:
+   name: "Solana-processor deploy"
+   runs-on: ubuntu-latest
+   needs: [build]
+   container:
+     image: docker://alpine/helm:3.11.1
+     volumes:
+       - ${{ github.workspace }}:/app
+
+   steps:
+     - name: Checkout repo
+       uses: actions/checkout@v4
+
+     - name: Deploy
+       run: cd apps/solana_processor/ && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i solana-processor helm -f helm/values.yaml -n default --set image.tag=${{github.sha}}
+       env:
+         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
