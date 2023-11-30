@@ -23,9 +23,10 @@ jobs:
    runs-on: ubuntu-latest
    needs: [test]
    container:
-     image: docker://docker:git
+     image: docker://docker:dind
      volumes:
        - ${{ github.workspace }}:/app
+     entrypoint: "/bin/sh"
 
    steps:
      - name: Checkout repo
