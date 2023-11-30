@@ -34,9 +34,12 @@ jobs:
      - name: Build
        run: cd apps/dash/ && docker build -t registry.digitalocean.com/masters-degree/dash:${{github.sha}} .
 
-     - name: Push
+     - name: Login
        run: docker login registry.digitalocean.com --username=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password=${{ secrets.PASSWORD }}
 
+     - name: Push
+       run: docker push registry.digitalocean.com/masters-degree/dash:${{github.sha}}
+  
   deploy:
    name: "Dash deploy"
    runs-on: ubuntu-latest
