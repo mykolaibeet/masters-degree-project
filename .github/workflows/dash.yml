@@ -32,7 +32,7 @@ jobs:
        uses: actions/checkout@v4
 
      - name: Build
-       run: export IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA") && cd apps/dash/ && docker build -t registry.digitalocean.com/masters-degree/dash:${IMAGE_TAG} .
+       run: cd apps/dash/ && docker build -t registry.digitalocean.com/masters-degree/dash:${{github.sha}} .
 
      - name: Push
        run: docker login registry.digitalocean.com --username=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password=${{ secrets.PASSWORD }}
@@ -51,12 +51,12 @@ jobs:
        uses: actions/checkout@v4
 
      - name: Deploy
-       run: export IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA") && cd apps/dash/ && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i --dry-run dash helm -f helm/values.yaml -n default --set image.tag=${IMAGE_TAG}
+       run: cd apps/dash/ && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i --dry-run dash helm -f helm/values.yaml -n default --set image.tag=$${{github.sha}}
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
 
      - name: Deploy
        if: github.ref == 'refs/heads/master'
-       run: export IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA") && cd apps/dash/ && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i dash helm -f helm/values.yaml -n default --set image.tag=${IMAGE_TAG}
+       run: cd apps/dash/ && mkdir -p /github/home/.kube && echo $KUBECONFIG_FILE | base64 -d  > /github/home/.kube/config && helm upgrade -i dash helm -f helm/values.yaml -n default --set image.tag=${{github.sha}}
        env:
          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
