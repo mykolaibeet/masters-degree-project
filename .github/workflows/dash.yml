@@ -26,14 +26,13 @@ jobs:
      image: docker://docker:dind
      volumes:
        - ${{ github.workspace }}:/app
-     entrypoint: "/bin/sh"
 
    steps:
      - name: Checkout repo
        uses: actions/checkout@v4
 
      - name: Build
-       run: export IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA") && cd apps/dash/ && docker build -t registry.digitalocean.com/masters-degree/dash:${IMAGE_TAG}
+       run: export IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA") && cd apps/dash/ && docker build -t registry.digitalocean.com/masters-degree/dash:${IMAGE_TAG} .
 
      - name: Push
        run: docker login registry.digitalocean.com --username=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} --password=${{ secrets.PASSWORD }}
