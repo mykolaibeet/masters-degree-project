@@ -7,7 +7,7 @@ on:
    - .github/workflows/dash.yml
 
 jobs:
- build:
+  build:
    name: "Dash test"
    runs-on: ubuntu-latest
 
@@ -18,7 +18,7 @@ jobs:
      - name: Test
        run: echo "Tests passed successfully"
 
- build:
+  build:
    name: "Dash build"
    runs-on: ubuntu-latest
    container:
@@ -36,7 +36,7 @@ jobs:
      - name: Push
        run: docker login registry.digitalocean.com --username=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN } --password=${{ secrets.PASSWORD }}
 
- deploy:
+  deploy:
    name: "Dash deploy"
    runs-on: ubuntu-latest
    container:
